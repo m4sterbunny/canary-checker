@@ -18,15 +18,16 @@ on:
       - "**.yml"
       - "test/**"
 name: Test
+permissions: write-all
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
         suite:
-          - minimal --skip-all
-          - k8s
-          - datasources
+          # - minimal --skip-all
+          # - k8s
+          # - datasources
           - git
     runs-on: ubuntu-latest
     steps:
@@ -55,6 +56,9 @@ jobs:
           KUBERNETES_VERSION: v1.20.7
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./test/e2e.sh fixtures/${{matrix.suite}}
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        if: always()
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
